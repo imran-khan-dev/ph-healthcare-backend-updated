@@ -7,9 +7,21 @@ import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import { AppointmentService } from './app/modules/Appointment/appointment.service';
 import { PaymentController } from './app/modules/Payment/payment.controller';
 import router from './app/routes';
+import passport from 'passport';
+import expressSession from "express-session"
+import "./app/passport/passport"
 
 const app: Application = express();
 app.use(cookieParser());
+
+app.use(expressSession({
+    secret: "Your Secret",
+    resave: false,
+    saveUninitialized: false
+}))
+
+app.use(passport.initialize());
+app.use(passport.session())
 
 app.post(
     "/webhook",
@@ -21,6 +33,9 @@ app.use(cors({
     origin: ['http://localhost:3000', 'http://localhost:3001'],
     credentials: true
 }));
+
+
+
 
 //parser
 app.use(express.json());

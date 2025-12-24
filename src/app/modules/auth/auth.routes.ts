@@ -3,6 +3,8 @@ import express, { NextFunction, Request, Response } from 'express';
 import auth from '../../middlewares/auth';
 import { authLimiter } from '../../middlewares/rateLimiter';
 import { AuthController } from './auth.controller';
+import passport from 'passport';
+import config from '../../../config';
 
 const router = express.Router();
 
@@ -11,6 +13,8 @@ router.post(
     authLimiter,
     AuthController.loginUser
 );
+
+
 
 router.post(
     '/refresh-token',
@@ -59,5 +63,16 @@ router.get(
     '/me',
     AuthController.getMe
 )
+
+
+router.get("/google", async (req: Request, res: Response, next: NextFunction) => {
+    const redirect = req.query.redirect || "/"
+    passport.authenticate("google", { scope: ["profile", "email"], state: redirect as string })(req, res, next)
+})
+
+// api/v1/auth/google/callback?state=/booking
+router.get("/google/callback", passport.authenticate("google", { failureRedirect: `${config.frontend_url}/login?error=There is some issues with your account. Please contact with out support team!` }), AuthController.googleCallbackController)
+
+
 
 export const AuthRoutes = router;
