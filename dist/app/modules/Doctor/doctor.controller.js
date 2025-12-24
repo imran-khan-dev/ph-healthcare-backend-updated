@@ -77,14 +77,15 @@ const getAiSuggestion = (0, catchAsync_1.default)((req, res) => __awaiter(void 0
     if (!symptoms || typeof symptoms !== 'string' || symptoms.trim().length < 5) {
         res.status(http_status_1.default.BAD_REQUEST).json({
             success: false,
-            message: 'Please provide valid symptoms for doctor suggestion.',
+            message: 'Please provide valid symptoms for doctor suggestion (minimum 5 characters).',
         });
+        return;
     }
     const result = yield doctor_service_1.DoctorService.getAISuggestion({ symptoms: symptoms.trim() });
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: 'Doctor suggestion retrieval successfully',
+        message: 'AI doctor suggestions retrieved successfully',
         data: result,
     });
 }));

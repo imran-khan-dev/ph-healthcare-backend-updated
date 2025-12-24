@@ -74,10 +74,11 @@ const getAiSuggestion = catchAsync(async (req: Request, res: Response) => {
 
     // Basic validation
     if (!symptoms || typeof symptoms !== 'string' || symptoms.trim().length < 5) {
-        return res.status(httpStatus.BAD_REQUEST).json({
+        res.status(httpStatus.BAD_REQUEST).json({
             success: false,
             message: 'Please provide valid symptoms for doctor suggestion (minimum 5 characters).',
         });
+        return;
     }
 
     const result = await DoctorService.getAISuggestion({ symptoms: symptoms.trim() });

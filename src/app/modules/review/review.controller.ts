@@ -7,7 +7,7 @@ import { IAuthUser } from "../../interfaces/common";
 import { reviewFilterableFields } from "./review.contant";
 import { ReviewService } from "./review.service";
 
-const insertIntoDB = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
+const insertIntoDB = catchAsync(async (req: Request, res: Response) => {
     const user = req.user;
     const result = await ReviewService.insertIntoDB(user as IAuthUser, req.body);
     sendResponse(res, {

@@ -17,7 +17,7 @@ const insertIntoDB = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
-const getAllFromDB = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
+const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
     const filters = pick(req.query, ['startDate', 'endDate']);
     const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
 

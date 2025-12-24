@@ -12,8 +12,18 @@ const globalErrorHandler_1 = __importDefault(require("./app/middlewares/globalEr
 const appointment_service_1 = require("./app/modules/Appointment/appointment.service");
 const payment_controller_1 = require("./app/modules/Payment/payment.controller");
 const routes_1 = __importDefault(require("./app/routes"));
+const passport_1 = __importDefault(require("passport"));
+const express_session_1 = __importDefault(require("express-session"));
+require("./app/passport/passport");
 const app = (0, express_1.default)();
 app.use((0, cookie_parser_1.default)());
+app.use((0, express_session_1.default)({
+    secret: "Your Secret",
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport_1.default.initialize());
+app.use(passport_1.default.session());
 app.post("/webhook", express_1.default.raw({ type: "application/json" }), payment_controller_1.PaymentController.handleStripeWebhookEvent);
 app.use((0, cors_1.default)({
     origin: ['http://localhost:3000', 'http://localhost:3001'],

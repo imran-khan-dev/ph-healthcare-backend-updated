@@ -5,7 +5,7 @@ import sendResponse from "../../../shared/sendResponse";
 import httpStatus from "http-status";
 import { IAuthUser } from "../../interfaces/common";
 
-const fetchDashboardMetaData = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
+const fetchDashboardMetaData = catchAsync(async (req: Request, res: Response) => {
 
     const user = req.user;
     const result = await MetaService.fetchDashboardMetaData(user as IAuthUser);

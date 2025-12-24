@@ -61,10 +61,10 @@ const seedSuperAdmin = () => __awaiter(void 0, void 0, void 0, function* () {
             return;
         }
         ;
-        const hashedPassword = yield bcrypt.hash("123456", Number(config_1.default.salt_round));
+        const hashedPassword = yield bcrypt.hash(config_1.default.admin_password, Number(config_1.default.salt_round));
         const superAdminData = yield prisma_1.default.user.create({
             data: {
-                email: "admin@gmail.com",
+                email: config_1.default.admin_email || "",
                 password: hashedPassword,
                 role: client_1.UserRole.ADMIN,
                 admin: {

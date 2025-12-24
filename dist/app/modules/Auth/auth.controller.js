@@ -18,6 +18,8 @@ const config_1 = __importDefault(require("../../../config"));
 const catchAsync_1 = __importDefault(require("../../../shared/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../../shared/sendResponse"));
 const auth_service_1 = require("./auth.service");
+const ApiError_1 = __importDefault(require("../../errors/ApiError"));
+const jwtHelpers_1 = require("../../../helpers/jwtHelpers");
 const loginUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const accessTokenExpiresIn = config_1.default.jwt.expires_in;
     const refreshTokenExpiresIn = config_1.default.jwt.refresh_token_expires_in;
@@ -207,8 +209,12 @@ const forgotPassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
     });
 }));
 const resetPassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const token = req.headers.authorization || "";
-    yield auth_service_1.AuthServices.resetPassword(token, req.body);
+    // Extract token from Authorization header (remove "Bearer " prefix)
+    const authHeader = req.headers.authorization;
+    console.log({ authHeader });
+    const token = authHeader ? authHeader.replace('Bearer ', '') : null;
+    const user = req.user; // Will be populated if authenticated via middleware
+    yield auth_service_1.AuthServices.resetPassword(token, req.body, user);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -226,11 +232,106 @@ const getMe = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, 
         data: result,
     });
 }));
+const googleCallbackController = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const accessTokenExpiresIn = config_1.default.jwt.expires_in;
+    const refreshTokenExpiresIn = config_1.default.jwt.refresh_token_expires_in;
+    // convert accessTokenExpiresIn to milliseconds
+    let accessTokenMaxAge = 0;
+    const accessTokenUnit = accessTokenExpiresIn.slice(-1);
+    const accessTokenValue = parseInt(accessTokenExpiresIn.slice(0, -1));
+    if (accessTokenUnit === "y") {
+        accessTokenMaxAge = accessTokenValue * 365 * 24 * 60 * 60 * 1000;
+    }
+    else if (accessTokenUnit === "M") {
+        accessTokenMaxAge = accessTokenValue * 30 * 24 * 60 * 60 * 1000;
+    }
+    else if (accessTokenUnit === "w") {
+        accessTokenMaxAge = accessTokenValue * 7 * 24 * 60 * 60 * 1000;
+    }
+    else if (accessTokenUnit === "d") {
+        accessTokenMaxAge = accessTokenValue * 24 * 60 * 60 * 1000;
+    }
+    else if (accessTokenUnit === "h") {
+        accessTokenMaxAge = accessTokenValue * 60 * 60 * 1000;
+    }
+    else if (accessTokenUnit === "m") {
+        accessTokenMaxAge = accessTokenValue * 60 * 1000;
+    }
+    else if (accessTokenUnit === "s") {
+        accessTokenMaxAge = accessTokenValue * 1000;
+    }
+    else {
+        accessTokenMaxAge = 1000 * 60 * 60; // default 1 hour
+    }
+    // convert refreshTokenExpiresIn to milliseconds
+    let refreshTokenMaxAge = 0;
+    const refreshTokenUnit = refreshTokenExpiresIn.slice(-1);
+    const refreshTokenValue = parseInt(refreshTokenExpiresIn.slice(0, -1));
+    if (refreshTokenUnit === "y") {
+        refreshTokenMaxAge = refreshTokenValue * 365 * 24 * 60 * 60 * 1000;
+    }
+    else if (refreshTokenUnit === "M") {
+        refreshTokenMaxAge = refreshTokenValue * 30 * 24 * 60 * 60 * 1000;
+    }
+    else if (refreshTokenUnit === "w") {
+        refreshTokenMaxAge = refreshTokenValue * 7 * 24 * 60 * 60 * 1000;
+    }
+    else if (refreshTokenUnit === "d") {
+        refreshTokenMaxAge = refreshTokenValue * 24 * 60 * 60 * 1000;
+    }
+    else if (refreshTokenUnit === "h") {
+        refreshTokenMaxAge = refreshTokenValue * 60 * 60 * 1000;
+    }
+    else if (refreshTokenUnit === "m") {
+        refreshTokenMaxAge = refreshTokenValue * 60 * 1000;
+    }
+    else if (refreshTokenUnit === "s") {
+        refreshTokenMaxAge = refreshTokenValue * 1000;
+    }
+    else {
+        refreshTokenMaxAge = 1000 * 60 * 60 * 24 * 30; // default 30 days
+    }
+    let redirectTo = req.query.state ? req.query.state : "";
+    if (redirectTo.startsWith("/")) {
+        redirectTo = redirectTo.slice(1);
+    }
+    // /booking => booking , => "/" => ""
+    const user = req.user;
+    if (!user) {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "User Not Found");
+    }
+    const tokenUser = user;
+    const accessToken = jwtHelpers_1.jwtHelpers.generateToken({
+        email: tokenUser.email,
+        role: tokenUser.role
+    }, config_1.default.jwt.jwt_secret, config_1.default.jwt.expires_in);
+    const refreshToken = jwtHelpers_1.jwtHelpers.generateToken({
+        email: tokenUser.email,
+        role: tokenUser.role
+    }, config_1.default.jwt.refresh_token_secret, config_1.default.jwt.refresh_token_expires_in);
+    res.cookie("accessToken", accessToken, {
+        secure: true,
+        httpOnly: true,
+        sameSite: "none",
+        maxAge: accessTokenMaxAge,
+    });
+    res.cookie("refreshToken", refreshToken, {
+        secure: true,
+        httpOnly: true,
+        sameSite: "none",
+        maxAge: refreshTokenMaxAge,
+    });
+    if (redirectTo) {
+        res.redirect(`${config_1.default.frontend_url}/${redirectTo}`);
+    }
+    res.redirect(`${config_1.default.frontend_url}/dashboard`);
+}));
 exports.AuthController = {
     loginUser,
     refreshToken,
     changePassword,
     forgotPassword,
     resetPassword,
-    getMe
+    getMe,
+    googleCallbackController
 };

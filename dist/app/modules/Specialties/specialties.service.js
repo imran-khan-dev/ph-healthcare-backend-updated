@@ -21,6 +21,7 @@ const inserIntoDB = (req) => __awaiter(void 0, void 0, void 0, function* () {
         const uploadToCloudinary = yield fileUploader_1.fileUploader.uploadToCloudinary(file);
         req.body.icon = uploadToCloudinary === null || uploadToCloudinary === void 0 ? void 0 : uploadToCloudinary.secure_url;
     }
+    console.log("specilitybackend", req.body);
     const result = yield prisma_1.default.specialties.create({
         data: req.body
     });

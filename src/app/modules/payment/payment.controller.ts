@@ -11,7 +11,8 @@ const handleStripeWebhookEvent = catchAsync(async (req: Request, res: Response) 
 
     if (!webhookSecret) {
         console.error("⚠️ Stripe webhook secret not configured");
-        return res.status(500).send("Webhook secret not configured");
+        res.status(500).send("Webhook secret not configured");
+        return;
     }
 
     let event;
@@ -19,7 +20,8 @@ const handleStripeWebhookEvent = catchAsync(async (req: Request, res: Response) 
         event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
     } catch (err: any) {
         console.error("⚠️ Webhook signature verification failed:", err.message);
-        return res.status(400).send(`Webhook Error: ${err.message}`);
+        res.status(400).send(`Webhook Error: ${err.message}`);
+        return;
     }
 
     try {

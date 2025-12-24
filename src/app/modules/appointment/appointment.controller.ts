@@ -7,7 +7,7 @@ import { IAuthUser } from "../../interfaces/common";
 import { appointmentFilterableFields } from "./appointment.constant";
 import { AppointmentService } from "./appointment.service";
 
-const createAppointment = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
+const createAppointment = catchAsync(async (req: Request, res: Response) => {
 
     const user = req.user;
 
@@ -21,7 +21,7 @@ const createAppointment = catchAsync(async (req: Request & { user?: IAuthUser },
     })
 });
 
-const getMyAppointment = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
+const getMyAppointment = catchAsync(async (req: Request, res: Response) => {
     const user = req.user;
     const filters = pick(req.query, ['status', 'paymentStatus']);
     const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
@@ -50,7 +50,7 @@ const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
-const changeAppointmentStatus = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
+const changeAppointmentStatus = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
     const { status } = req.body;
     const user = req.user;
@@ -64,7 +64,7 @@ const changeAppointmentStatus = catchAsync(async (req: Request & { user?: IAuthU
     });
 });
 
-const createAppointmentWithPayLater = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
+const createAppointmentWithPayLater = catchAsync(async (req: Request , res: Response) => {
     const user = req.user;
 
     const result = await AppointmentService.createAppointmentWithPayLater(user as IAuthUser, req.body);
@@ -77,7 +77,7 @@ const createAppointmentWithPayLater = catchAsync(async (req: Request & { user?: 
     })
 });
 
-const initiatePayment = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
+const initiatePayment = catchAsync(async (req: Request, res: Response) => {
     const user = req.user;
     const { id } = req.params;
 

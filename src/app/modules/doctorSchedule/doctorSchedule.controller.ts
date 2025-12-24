@@ -7,7 +7,7 @@ import { IAuthUser } from "../../interfaces/common";
 import pick from "../../../shared/pick";
 import { scheduleFilterableFields } from "./doctorSchedule.constants";
 
-const insertIntoDB = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
+const insertIntoDB = catchAsync(async (req: Request, res: Response) => {
 
     const user = req.user;
     const result = await DoctorScheduleService.insertIntoDB(user, req.body);
@@ -20,7 +20,7 @@ const insertIntoDB = catchAsync(async (req: Request & { user?: IAuthUser }, res:
     });
 });
 
-const getMySchedule = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
+const getMySchedule = catchAsync(async (req: Request, res: Response) => {
     const filters = pick(req.query, ['startDate', 'endDate', 'isBooked']);
     const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
 
@@ -35,7 +35,7 @@ const getMySchedule = catchAsync(async (req: Request & { user?: IAuthUser }, res
     });
 });
 
-const deleteFromDB = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
+const deleteFromDB = catchAsync(async (req: Request, res: Response) => {
 
     const user = req.user;
     const { id } = req.params;

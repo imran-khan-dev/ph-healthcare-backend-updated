@@ -21,6 +21,10 @@ const loginUser = async (payload: {
         }
     });
 
+    if (!userData.password) {
+        throw new ApiError(httpStatus.UNAUTHORIZED, 'Password not set');
+    }
+
 
     const isCorrectPassword: boolean = await bcrypt.compare(payload.password, userData.password);
 
@@ -98,6 +102,10 @@ const changePassword = async (user: any, payload: any) => {
             status: UserStatus.ACTIVE
         }
     });
+    
+    if (!userData.password) {
+        throw new ApiError(httpStatus.UNAUTHORIZED, 'Password not set');
+    }
 
     const isCorrectPassword: boolean = await bcrypt.compare(payload.oldPassword, userData.password);
 

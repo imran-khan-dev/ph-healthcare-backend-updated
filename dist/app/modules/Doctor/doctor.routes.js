@@ -12,7 +12,7 @@ const validateRequest_1 = __importDefault(require("../../middlewares/validateReq
 const doctor_validation_1 = require("./doctor.validation");
 const router = express_1.default.Router();
 // AI driven doctor suggestion
-router.get('/suggestion', doctor_controller_1.DoctorController.getAiSuggestion);
+router.post('/suggestion', doctor_controller_1.DoctorController.getAiSuggestion);
 // task 3
 router.get('/', doctor_controller_1.DoctorController.getAllFromDB);
 //task 4

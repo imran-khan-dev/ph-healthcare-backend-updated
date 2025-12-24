@@ -70,7 +70,7 @@ const changeProfileStatus = catchAsync(async (req: Request, res: Response) => {
 });
 
 
-const getMyProfile = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
+const getMyProfile = catchAsync(async (req: Request, res: Response) => {
 
     const user = req.user;
 
@@ -84,7 +84,7 @@ const getMyProfile = catchAsync(async (req: Request & { user?: IAuthUser }, res:
     })
 });
 
-const updateMyProfie = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
+const updateMyProfie = catchAsync(async (req: Request, res: Response) => {
 
     const user = req.user;
 
